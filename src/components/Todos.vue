@@ -1,22 +1,37 @@
 <template>
     <div>
         <add-todo></add-todo>
+        <FilterTodos></FilterTodos>
         <h3>todos</h3>
         <div class="todos">
-            <div v-for='todo in allTodos' :key='todo.id' class="todo">{{ todo.title }}</div>
+            <div @dblclick="onDblClick(todo)" v-for='todo in allTodos' :key='todo.id' class="todo"
+             v-bind:class="{'is-complete':todo.completed}">
+                {{ todo.title }}
+                <span @click="deleteTodo(todo.id)" class='delete'>delete</span>
+            </div>
         </div>
     </div>
 </template>
 <script>
 import { mapGetters, mapActions} from 'vuex';
 import AddTodo from './AddTodo'
+import FilterTodos from './FilterTodo'
 export default {
     name:"todos",
     components: {
-        AddTodo
+        AddTodo,
+        FilterTodos
     },
     methods: {
-        ...mapActions(['fetchTodos'])
+        ...mapActions(['fetchTodos','deleteTodo', 'updateTodo']),
+        onDblClick(todo) {
+            let updTodo = {
+                id: todo.id,
+                title: todo.title,
+                completed: !todo.completed
+            }
+            this.updateTodo(updTodo);
+        }
 
     },
     computed: mapGetters(['allTodos']),
@@ -41,4 +56,14 @@ export default {
         position: relative;
         cursor: pointer; 
     }
+    .delete {
+        float: right;
+    }
+    .delete:hover{
+        color: #000;
+    }
+    .is-complete {
+        background: #ec9410
+    }
+    
 </style>
